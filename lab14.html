@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Quiz Application</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+body {
+    background-color: #eff6ff;
+}
+.quiz-box {
+    transition: 0.3s;
+}
+button {
+    transition: 0.3s;
+}
+button:hover {
+    transform: scale(1.03);
+}
+</style>
+</head>
+<body class="flex justify-center items-center min-h-screen">
+<div class="quiz-box bg-white p-6 rounded-xl shadow-lg w-96">
+    <h1 class="text-2xl font-bold text-center text-blue-800 mb-4">RAI Quiz</h1>
+    
+    <p id="questionNumber" class="text-gray-500 mb-2">Question 1</p>
+    
+    <h2 id="question" class="text-lg font-bold mb-4">Question will appear here</h2>
+    
+    <div id="options" class="space-y-3"></div>
+    
+    <p id="message" class="mt-4 font-bold"></p>
+    
+    <button id="nextBtn"
+        onclick="nextQuestion()"
+        class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded w-full mt-4">
+        Next Question
+    </button>
+    
+    <p id="score" class="text-center mt-4 text-gray-600"></p>
+</div>
+
+<script>
+let questions = [
+    {
+        question: "1. Which animal is known as the King of the Jungle?",
+        options: [
+            "Tiger",
+            "Lion",
+            "Elephant",
+            "Monkey"
+        ],
+        answer: "Lion"
+    },
+    {
+        question: "2. Which planet is known as the Red Planet?",
+        options: [
+            "Earth",
+            "Venus",
+            "Mars",
+            "Jupiter"
+        ],
+        answer: "Mars"
+    },
+    {
+        question: "3. Which language is used to style a webpage?",
+        options: [
+            "HTML",
+            "CSS",
+            "SQL",
+            "C"
+        ],
+        answer: "CSS"
+    },
+    {
+        question: "4. How many days are there in a leap year?",
+        options: [
+            "364",
+            "365",
+            "366",
+            "367"
+        ],
+        answer: "366"
+    },
+    {
+        question: "5. Which is the largest ocean in the world?",
+        options: [
+            "Indian Ocean",
+            "Atlantic Ocean",
+            "Arctic Ocean",
+            "Pacific Ocean"
+        ],
+        answer: "Pacific Ocean"
+    }
+];
+
+let currentQuestion = 0;
+let score = 0;
+let answered = false;
+
+// Display the current question
+function showQuestion() {
+    answered = false;
+    document.getElementById("message").innerText = "";
+    document.getElementById("score").innerText = "";
+    
+    document.getElementById("questionNumber").innerText =
+        "Question " + (currentQuestion + 1) + " of " + questions.length;
+        
+    document.getElementById("question").innerText =
+        questions[currentQuestion].question;
+        
+    let options = document.getElementById("options");
+    options.innerHTML = "";
+    
+    // Display all answer options
+    for (let i = 0; i < questions[currentQuestion].options.length; i++) {
+        let btn = document.createElement("button");
+        // Show the option as text
+        btn.innerText = questions[currentQuestion].options[i];
+        btn.className = "bg-blue-100 hover:bg-blue-200 p-2 rounded w-full text-left px-4";
+        
+        // Check the selected answer on click
+        btn.onclick = function () {
+            checkAnswer(btn.innerText, btn);
+        };
+        options.appendChild(btn);
+    }
+    
+    // Change the button text on the last question
+    if (currentQuestion == questions.length - 1) {
+        document.getElementById("nextBtn").innerText = "Show Result";
+    } else {
+        document.getElementById("nextBtn").innerText = "Next Question";
+    }
+}
+
+// Check whether the answer is correct
+function checkAnswer(selectedAnswer, btn) {
+    if (answered == true) {
+        return;
+    }
+    answered = true;
+    
+    if (selectedAnswer == questions[currentQuestion].answer) {
+        score++;
+        document.getElementById("message").innerText =
+            "Correct! Your brain is working overtime!";
+        document.getElementById("message").style.color = "green";
+        btn.style.backgroundColor = "#86efac";
+    } else {
+        document.getElementById("message").innerText =
+            "Oops! Even Google couldn't save that answer!";
+        document.getElementById("message").style.color = "red";
+        btn.style.backgroundColor = "#fca5a5";
+    }
+    
+    document.getElementById("score").innerText = "Your Score: " + score;
+}
+
+// Move to the next question
+function nextQuestion() {
+    // Do not continue until an answer is selected
+    if (answered == false) {
+        document.getElementById("message").innerText =
+            "Choose an answer first! Don't run away!";
+        document.getElementById("message").style.color = "orange";
+        return;
+    }
+    
+    if (currentQuestion < questions.length - 1) {
+        currentQuestion++;
+        showQuestion();
+    } else {
+        showResult();
+    }
+}
+
+// Display the final result
+function showResult() {
+    document.getElementById("questionNumber").innerText = "Quiz Completed!";
+    document.getElementById("question").innerText =
+        "Your Final Score: " + score + "/" + questions.length;
+    document.getElementById("options").innerHTML = "";
+    
+    let resultMessage = "";
+    if (score == 5) {
+        resultMessage = "Coding legend! Even bugs are scared of you!";
+    } else if (score >= 3) {
+        resultMessage = "Not bad! Your keyboard believes in you!";
+    } else {
+        resultMessage = "Keep practising! Every coding expert starts somewhere!";
+    }
+    
+    document.getElementById("message").innerText = resultMessage;
+    document.getElementById("message").style.color = "green";
+    document.getElementById("score").innerText =
+        "You scored " + Math.round((score / questions.length) * 100) + "%";
+        
+    document.getElementById("nextBtn").innerText = "Play Again";
+    
+    // Change the button action to restart the quiz
+    document.getElementById("nextBtn").onclick = restartQuiz;
+}
+
+// Restart the quiz from the beginning
+function restartQuiz() {
+    currentQuestion = 0;
+    score = 0;
+    answered = false;
+    document.getElementById("nextBtn").onclick = nextQuestion;
+    showQuestion();
+}
+
+// Start the quiz
+showQuestion();
+</script>
+</body>
+</html>
